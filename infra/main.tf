@@ -15,16 +15,6 @@ provider "google" {
 }
 
 # -----------------------------
-# Artifact Registry Repository
-# -----------------------------
-resource "google_artifact_registry_repository" "neoguru" {
-  provider = google
-  location = var.region
-  repository_id = var.repository
-  format = "DOCKER"
-}
-
-# -----------------------------
 # Cloud Run Service
 # -----------------------------
 resource "google_cloud_run_v2_service" "llm_service" {

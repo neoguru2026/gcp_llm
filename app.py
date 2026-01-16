@@ -1,24 +1,41 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 from transformers import AutoModelForCausalLM, AutoTokenizer
 import torch
+import uvicorn
+import os
 
 app = FastAPI()
 
-model_name = googlegemma-2b-it  # small, cheap, works for both tasks
+# Model name
+model_name = "google/gemma-2b-it"
+
+# Load tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForCausalLM.from_pretrained(model_name)
 
-@app.post(generate)
-def generate(prompt str)
-    inputs = tokenizer(prompt, return_tensors=pt)
-    outputs = model.generate(inputs, max_new_tokens=150)
-    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return {text text}
+# Request schemas
+class GenerateRequest(BaseModel):
+    prompt: str
 
-@app.post(embed)
-def embed(text str)
-    inputs = tokenizer(text, return_tensors=pt)
-    with torch.no_grad()
-        hidden = model(inputs, output_hidden_states=True).hidden_states[-1]
+class EmbedRequest(BaseModel):
+    text: str
+
+@app.post("/generate")
+def generate(req: GenerateRequest):
+    inputs = tokenizer(req.prompt, return_tensors="pt")
+    outputs = model.generate(**inputs, max_new_tokens=150)
+    text = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    return {"text": text}
+
+@app.post("/embed")
+def embed(req: EmbedRequest):
+    inputs = tokenizer(req.text, return_tensors="pt")
+    with torch.no_grad():
+        hidden = model(**inputs, output_hidden_states=True).hidden_states[-1]
         embedding = hidden.mean(dim=1).squeeze().tolist()
-    return {embedding embedding}
+    return {"embedding": embedding}
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
