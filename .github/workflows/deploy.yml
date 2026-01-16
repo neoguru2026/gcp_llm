@@ -45,7 +45,7 @@ jobs:
       # -----------------------------
       - name: Build Docker image
         run: |
-          docker build -t $IMAGE_NAME:latest .
+          docker build --build-arg HF_TOKEN=${{ secrets.HF_TOKEN }} -t $IMAGE_NAME:latest .
 
       - name: Tag Docker image
         run: |

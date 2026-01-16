@@ -1,17 +1,24 @@
 FROM python:3.10-slim
 
+ARG HF_TOKEN
+ENV HF_TOKEN=${HF_TOKEN}
+
 WORKDIR /app
 
 # Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download model at build time
+# Download model with authentication
 RUN python - <<EOF
 from transformers import AutoTokenizer, AutoModelForCausalLM
+import os
+
 model_name = "google/gemma-2b-it"
-AutoTokenizer.from_pretrained(model_name, cache_dir="/app/model")
-AutoModelForCausalLM.from_pretrained(model_name, cache_dir="/app/model")
+token = os.environ["HF_TOKEN"]
+
+AutoTokenizer.from_pretrained(model_name, token=token, cache_dir="/app/model")
+AutoModelForCausalLM.from_pretrained(model_name, token=token, cache_dir="/app/model")
 EOF
 
 # Copy app code
