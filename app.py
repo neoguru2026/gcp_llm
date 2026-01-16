@@ -7,7 +7,7 @@ import os
 
 app = FastAPI()
 
-# Model name
+# Model name  for LLM
 model_name = "google/gemma-2b-it"
 
 # Load tokenizer and model
