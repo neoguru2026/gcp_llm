@@ -7,6 +7,7 @@ import os
 
 app = FastAPI()
 
+#Model Path
 MODEL_PATH = "/app/model"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
