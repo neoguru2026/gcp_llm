@@ -28,8 +28,12 @@ resource "google_cloud_run_v2_service" "llm_service" {
       resources {
         limits = {
           cpu    = "2"
-          memory = "4Gi"
+          memory = "16Gi"
         }
+      }
+
+      template {
+        timeout = "900s"
       }
 
       env {
